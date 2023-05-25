@@ -75,7 +75,7 @@ var m = map[string]string{
 func ThaiToRoman(str string, mode int) (out string) {
 	after := ""
 	ToAddafter := []string{"เ", "โ"}
-	if mode == 0 {
+	if mode == 1 {
 		for str != "" {
 			r, _ := utf8.DecodeRuneInString(str)
 			char := string(r)
@@ -91,7 +91,7 @@ func ThaiToRoman(str string, mode int) (out string) {
 			}
 			str = strings.TrimPrefix(str, char)
 		}
-	} else {
+	} else if mode > 1 {
 		cons   := strings.Split("มลพอกขคฆงภจฉชฌญฏฐฑฒณตถทธปผยรวสหฬน", "")
 		vowels := strings.Split("ะัิีึืุูา", "")
 		combinations := []string{"ทฺว", "สฺว", "สฺม"}
