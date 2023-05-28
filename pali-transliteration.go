@@ -125,6 +125,8 @@ func ThaiToRoman(str string, mode int) (out string) {
 		}
 		re := regexp.MustCompile(` +\.`)
 		out = re.ReplaceAllString(out, ".")
+	} else {
+		return str
 	}
 	return
 }
