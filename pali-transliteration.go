@@ -78,9 +78,15 @@ func ThaiToRoman(str string, mode int) (out string) {
 	if mode == 1 {
 		for str != "" {
 			r, _ := utf8.DecodeRuneInString(str)
-			char := string(r)
+			char := string(r)			
+			str = strings.TrimPrefix(str, char)
 			if corresp, ok := m[char]; ok {
 				if !contains(ToAddafter, char) {
+					r, _ := utf8.DecodeRuneInString(str)
+					nextchar := string(r)
+					if _, ok := m[nextchar]; char == "ง" && !ok {
+						corresp = "ṁ"
+					}
 					out += corresp + after
 					after = "" 
 				} else {
@@ -89,9 +95,8 @@ func ThaiToRoman(str string, mode int) (out string) {
 			} else {
 				out += char
 			}
-			str = strings.TrimPrefix(str, char)
 		}
-	} else if mode > 1 {
+	} else if mode == 2 {
 		cons   := strings.Split("มลพอกขคฆงภจฉชฌญฏฐฑฒณตถทธปผยรวสหฬน", "")
 		vowels := strings.Split("ะัิีึืุูา", "")
 		combinations := []string{"ทฺว", "สฺว", "สฺม"}
