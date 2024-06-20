@@ -11,7 +11,7 @@ import (
 	"runtime"
 	"path/filepath"
 	"sort"
-	
+
 	"github.com/rs/zerolog/log"
 	"github.com/gookit/color"
 	"github.com/k0kubun/pp"
@@ -66,10 +66,10 @@ var (
 		"า": "ā",
 		"ิ":  "i",
 		"ี":  "ī",
-		"ู":  "ū",	
-		"เ": "e",	
-		"โ": "o",	
-		"์":  "-",	
+		"ู":  "ū",
+		"เ": "e",
+		"โ": "o",
+		"์":  "-",
 		"ํ":  "ṃ", //"ṁ",
 		"๐": "0",
 		"๑": "1",
@@ -90,7 +90,7 @@ var (
 	}
 )
 
-func ThaiToRoman(str string, mode int) (out string) {
+func ThaiToLatin(str string, mode int) (out string) {
 	after := ""
 	ToAddafter := []string{"เ", "โ"}
 	if mode == 1 { //PHONETIC (NORMAL) STYLE THAI PALI
@@ -137,7 +137,7 @@ func ThaiToRoman(str string, mode int) (out string) {
 						after = "a"
 					}
 					out += corresp + after
-					after = "" 
+					after = ""
 				} else {
 					after = corresp
 				}
@@ -155,7 +155,7 @@ func ThaiToRoman(str string, mode int) (out string) {
 }
 
 
-func RomanToKana(str string) (out string) {
+func LatinToKana(str string) (out string) {
 	if len(kanaPatterns) == 0 {
 		if ok := initKana(); !ok {
 			kanaPatterns = kanaPatternsBackup
