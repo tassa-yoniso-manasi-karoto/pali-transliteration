@@ -1,9 +1,15 @@
+**A simple web user interface for this library is available [here](https://github.com/tassa-yoniso-manasi-karoto/pali-transliteration-webui)**
+
+<hr>
+
 There are two writings systems in use for Thai script Pali and both of them are supported by the library:
 - 𝐏𝐇𝐎𝐍𝐄𝐓𝐈𝐂 𝐓𝐇𝐀𝐈 𝐒𝐂𝐑𝐈𝐏𝐓 𝐏𝐀𝐋𝐈 (mode 1): This is essentially regular Thai writing, you'll find this in use in chanting text books or wherever there is a need for non experts to be able to read Pali. It's not perfectly accurate. 
 - 𝐏𝐈𝐍𝐓𝐔-𝐒𝐓𝐘𝐋𝐄 𝐓𝐇𝐀𝐈 𝐒𝐂𝐑𝐈𝐏𝐓 𝐏𝐀𝐋𝐈 (aka virāma style) (mode 2): this is the system in use in the Thai Tipitaka, it has its own set of rules that deviates from regular Thai writing. See Wikipedia [Thai script#Sanskrit and Pali](https://en.wikipedia.org/wiki/Thai_script?useskin=vector#Sanskrit_and_Pali).
 
-The katakana transliteration scheme is **almost finished but needs testing and reviewing.**
+  
 
-For a library that transliterates the other way around see https://github.com/siongui/pali-transliteration/
+The katakana transliteration scheme is *almost finished but needs testing and reviewing.*
 
-The Digital Pali Reader offers several transliteration options. Drag the lower drawer up and click the "Cv" tab to see them: https://www.digitalpalireader.online
+For a library that transliterates ***the other way around*** see https://github.com/siongui/pali-transliteration/
+
+The **Digital Pali Reader** offers ***several transliteration options***. Drag the lower drawer up and click the "Cv" tab to see them: https://www.digitalpalireader.online
