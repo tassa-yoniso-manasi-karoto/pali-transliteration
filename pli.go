@@ -202,9 +202,9 @@ func initKana() bool {
 	} else {
 		path += "/"
 	}
-	data, err := ioutil.ReadFile(path+"transliteration.json")
+	data, err := ioutil.ReadFile(path+"kana_translit.json")
 	if err != nil {
-		log.Error().Err(err).Msg("Can't access transliteration.json")
+		log.Warn().Msgf("Can't access kana_translit.json: %s", err)
 		return false
 	}
 	err = json.Unmarshal(data, &p)

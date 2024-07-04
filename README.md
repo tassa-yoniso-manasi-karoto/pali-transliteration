@@ -5,3 +5,5 @@ There are two writings systems in use for Thai script Pali and both of them are 
 The katakana transliteration scheme is **almost finished but needs testing and reviewing.**
 
 For a library that transliterates the other way around see https://github.com/siongui/pali-transliteration/
+
+The Digital Pali Reader offers several transliteration options. Drag the lower drawer up and click the "Cv" tab to see them: https://www.digitalpalireader.online
