@@ -10,3 +10,20 @@ For a library that transliterates from Roman to Pintu-styled Thai see https://gi
  
 ## ➡ Use https://www.aksharamukha.com/converter for every other scripts
 **Open sourced at https://github.com/virtualvinodh/aksharamukha/**
+
+
+<hr>
+
+นี้เกี่ยวกับไลบรารีที่ให้การถอดความจาก:
+- **พาลีสคริปต์ไทยแบบสามัญ** (โหมด 1)
+- **พาลีสคริปต์ไทยสไตล์พินตุ** (หรือที่เรียกว่าสไตล์วิรามา) (โหมด 2)
+
+สำหรับไลบรารีที่ถอดความจากตัวอักษรโรมันไปยังพาลีสไตล์พินตุ ดูได้ที่: https://github.com/siongui/pali-transliteration/
+
+**มีอินเตอร์เฟซผู้ใช้ทางเว็บที่ผสมผสานทั้งสองแบบให้ใช้งานได้ที่นี่:** https://github.com/tassa-yoniso-manasi-karoto/pali-transliteration-webui
+
+ 
+ 
+## ➡ ใช้ https://www.aksharamukha.com/converter สำหรับสคริปต์อื่น ๆ
+
+**เปิดให้ใช้งานแบบโอเพ่นซอร์สที่ https://github.com/virtualvinodh/aksharamukha/**
