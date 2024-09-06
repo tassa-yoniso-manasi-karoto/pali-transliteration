@@ -11,11 +11,13 @@ import (
 	"runtime"
 	"path/filepath"
 	"sort"
+	"slices"
 
 	"github.com/rs/zerolog/log"
 	"github.com/gookit/color"
 	"github.com/k0kubun/pp"
 	"github.com/rivo/uniseg"
+	libgiita "github.com/tassa-yoniso-manasi-karoto/giita/lib"
 )
 
 	//TODO Yamakkan ๎
@@ -154,6 +156,7 @@ func ThaiToLatin(str string, mode int) (out string) {
 	return
 }
 
+var done bool
 
 func LatinToKana(str string) (out string) {
 	if len(kanaPatterns) == 0 {
@@ -162,30 +165,48 @@ func LatinToKana(str string) (out string) {
 			kanaScheme = kanaSchemeBackup
 		}
 	}
+	var todo []string
+	todoCxt := make(map[string]string)
 	str = strings.ToLower(str)
 	str = strings.ReplaceAll(str, "ṃ", "ṁ")
-Outerloop:
-	for str != "" {
-		for _, s := range kanaPatterns {
-			if _, found := strings.CutPrefix(str, s); found {
-				if wantDebug { color.Greenln("MATCHED:", s)}
-				out += kanaScheme[s]
-				str = strings.TrimPrefix(str, s)
-				continue Outerloop
+	RawUnits := libgiita.Parser(str)
+	Syllables := libgiita.SyllableBuilder(RawUnits)
+	Segments := libgiita.SegmentBuilder(Syllables)
+	for _, Segment := range Segments {
+	SyllableLoop:
+		for _, Syllable := range Segment {
+			s := Syllable.String()
+			s = strings.ReplaceAll(s, "’", "")
+			for _, pattern := range kanaPatterns {
+				if pattern == s {
+					if wantDebug { color.Greenln("MATCHED:", pattern)}
+					out += kanaScheme[pattern]
+					continue SyllableLoop
+				}
+			}
+			/* TODO must log that syllable matching has failed + follow up with "dumb" matching (= use whatever matches the prefix of the string instead of the whole string) */
+			if !done && !contains(todo, s) && Syllable.Relevant {
+				todo = append(todo, s)
+				todoCxt[s] = strings.ReplaceAll(Segment.SyllableString(), "\n", " ")
+			}
+			out += s
+			if wantDebug {
+				if !reSpace.MatchString(s) {
+					color.Redf("MATCH FAILED: \"%s\"\n", s)
+				} else {
+					fmt.Print("\n")
+				}
 			}
 		}
-		r, _ := utf8.DecodeRuneInString(str)
-		c := string(r)
-		out += c
-		if wantDebug {
-			if !reSpace.MatchString(c) {
-				color.Redf("MATCH FAILED: \"%s\"\n", c)
-			} else {
-				fmt.Print("\n")
-			}
-		}
-		str = strings.TrimPrefix(str, c)
 	}
+	if !done {
+		slices.Sort(todo)
+		for _, s := range todo {
+			fmt.Printf(" \"%s\"____\"%s\"\n", s, todoCxt[s])
+		}
+		color.Redln(len(todo), "Syllables remaining to map.")
+	}
+	done = true
 	return
 }
 
@@ -223,6 +244,7 @@ func initKana() bool {
 		}
 		return kanaPatterns[i] > kanaPatterns[j]
 	})
+	log.Info().Msg("Parsed transliteration scheme from JSON.")
 	return true
 }
 
@@ -244,7 +266,7 @@ func parseKanaTree(depth int, m map[string]interface{}) {
 			atm = append(atm, strings.ToLower(k))
 			parseKanaTree(depth+1, v.(map[string]interface{}))
 		default:
-			panic("wrong house you fool")
+			panic("Unexpected JSON construct. Check JSON file integrity.")
 		}
 	}
 }
