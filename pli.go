@@ -4,29 +4,15 @@ import (
 	"strings"
 	"unicode/utf8"
 	"regexp"
-	"fmt"
-	"os"
-	"io/ioutil"
-	"encoding/json"
-	"runtime"
-	"path/filepath"
-	"sort"
-	"slices"
 
-	"github.com/rs/zerolog/log"
 	"github.com/gookit/color"
 	"github.com/k0kubun/pp"
-	"github.com/rivo/uniseg"
-	libgiita "github.com/tassa-yoniso-manasi-karoto/giita/lib"
 )
 
 	//TODO Yamakkan ๎
 var (
 	wantDebug = false
-	kanaPatterns []string
-	kanaScheme = make(map[string]string)
 	p = map[string]any{}
-	atm = []string{} // atm = at the moment
 	reSpace = regexp.MustCompile(`\p{Z}+|[\n\r]+`)
 	m = map[string]string{
 		"อ": "",
@@ -154,121 +140,6 @@ func ThaiToLatin(str string, mode int) (out string) {
 		return str
 	}
 	return
-}
-
-var done bool
-
-func LatinToKana(str string) (out string) {
-	if len(kanaPatterns) == 0 {
-		if ok := initKana(); !ok {
-			kanaPatterns = kanaPatternsBackup
-			kanaScheme = kanaSchemeBackup
-		}
-	}
-	var todo []string
-	todoCxt := make(map[string]string)
-	str = strings.ToLower(str)
-	str = strings.ReplaceAll(str, "ṃ", "ṁ")
-	RawUnits := libgiita.Parser(str)
-	Syllables := libgiita.SyllableBuilder(RawUnits)
-	Segments := libgiita.SegmentBuilder(Syllables)
-	for _, Segment := range Segments {
-	SyllableLoop:
-		for _, Syllable := range Segment {
-			s := Syllable.String()
-			s = strings.ReplaceAll(s, "’", "")
-			for _, pattern := range kanaPatterns {
-				if pattern == s {
-					if wantDebug { color.Greenln("MATCHED:", pattern)}
-					out += kanaScheme[pattern]
-					continue SyllableLoop
-				}
-			}
-			/* TODO must log that syllable matching has failed + follow up with "dumb" matching (= use whatever matches the prefix of the string instead of the whole string) */
-			if !done && !contains(todo, s) && Syllable.Relevant {
-				todo = append(todo, s)
-				todoCxt[s] = strings.ReplaceAll(Segment.SyllableString(), "\n", " ")
-			}
-			out += s
-			if wantDebug {
-				if !reSpace.MatchString(s) {
-					color.Redf("MATCH FAILED: \"%s\"\n", s)
-				} else {
-					fmt.Print("\n")
-				}
-			}
-		}
-	}
-	if !done {
-		slices.Sort(todo)
-		for _, s := range todo {
-			fmt.Printf(" \"%s\"____\"%s\"\n", s, todoCxt[s])
-		}
-		color.Redln(len(todo), "Syllables remaining to map.")
-	}
-	done = true
-	return
-}
-
-
-func initKana() bool {
-	ex, err := os.Executable()
-	if err != nil {
-		log.Error().Err(err).Msg("An error occurred")
-		return false
-	}
-	path := filepath.Dir(ex)
-	if runtime.GOOS == "windows" {
-		path += `\`
-	} else {
-		path += "/"
-	}
-	data, err := ioutil.ReadFile(path+"kana_translit.json")
-	if err != nil {
-		log.Warn().Msgf("Can't access kana_translit.json: %s", err)
-		return false
-	}
-	err = json.Unmarshal(data, &p)
-	if err != nil {
-		log.Error().Err(err).Msg("Unmarshal error")
-		return false
-	}
-	parseKanaTree(0, p)
-	for k, _ := range kanaScheme {
-		kanaPatterns = append(kanaPatterns, k)
-	}
-	sort.Slice(kanaPatterns, func(i, j int) bool {
-		l1, l2 := uniseg.GraphemeClusterCount(kanaPatterns[i]), uniseg.GraphemeClusterCount(kanaPatterns[j])
-		if l1 != l2 {
-			return l1 > l2
-		}
-		return kanaPatterns[i] > kanaPatterns[j]
-	})
-	log.Info().Msg("Parsed transliteration scheme from JSON.")
-	return true
-}
-
-
-
-func parseKanaTree(depth int, m map[string]interface{}) {
-	// atm = at the moment
-	for k, v := range m {
-		if len(atm) > depth {
-			//fmt.Println(atm, "===>", atm[:depth+1])
-			atm = atm[:depth]
-		}
-		switch v.(type) {
-		case string:
-			tmp := strings.Join(append(atm, strings.ToLower(k)), "")
-			//fmt.Println(tmp, "=", strings.ToLower(v.(string)))
-			kanaScheme[tmp] = strings.ToLower(v.(string))
-		case map[string]interface{}:
-			atm = append(atm, strings.ToLower(k))
-			parseKanaTree(depth+1, v.(map[string]interface{}))
-		default:
-			panic("Unexpected JSON construct. Check JSON file integrity.")
-		}
-	}
 }
 
 
